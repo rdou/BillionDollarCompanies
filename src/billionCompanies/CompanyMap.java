@@ -34,8 +34,6 @@ public class CompanyMap extends PApplet{
         size(900, 600, OPENGL); 
         this.mapSetting();
         MapUtils.createDefaultEventDispatcher(this, map);
-        //CompanyMarker apple = new CompanyMarker(new Location(37.330552, -122.029653));
-        //companyMarker.add(new CompanyMarker(new Location(37.330552, -122.029653)));
         CompanyMarker apple = new CompanyMarker(new Location(37.330552, -122.029653));
         companyMarker.add(apple);
         map.addMarkers(companyMarker);

@@ -1,9 +1,9 @@
 public class CompanyInfo {
     private String companyName;
     private String companySymbol;
-    private float companyMarketCap;
-
-    public CompanyInfo(String name, String symbol, float marketcap) {
+    private Float companyMarketCap;
+    
+    public CompanyInfo(String name, String symbol, Float marketcap) {
         this.companyName = name;
         this.companySymbol = symbol; 
         this.companyMarketCap = marketcap; 
@@ -28,11 +28,11 @@ public class CompanyInfo {
     }
     
     // companyMarketCap 
-    public float getCompanyMarketCap() {
+    public Float getCompanyMarketCap() {
         return this.companyMarketCap; 
     }
     
-    public void setCompanyMarketCap(float marketcap) {
+    public void setCompanyMarketCap(Float marketcap) {
         this.companyMarketCap = marketcap; 
     }
 

@@ -9,7 +9,7 @@ import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 
-public class CompanyMarker extends SimplePointMarker {
+public abstract class CompanyMarker extends SimplePointMarker {
     public CompanyMarker(Location location) {
         super(location); 
     }
@@ -18,11 +18,11 @@ public class CompanyMarker extends SimplePointMarker {
 	    super(location, properties);
 	}
 
-    //@Override 
-    //public void draw(PGraphics pg, float x, float y) {
-    //    drawMarker(pg, x, y); 
-    //} 
+    @Override 
+    public void draw(PGraphics pg, float x, float y) {
+        drawMarker(pg, x, y); 
+    } 
     
-    //public abstract void drawMarker(PGraphics pg, float x, float y);
+    public abstract void drawMarker(PGraphics pg, float x, float y);
 }
 

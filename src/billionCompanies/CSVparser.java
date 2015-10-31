@@ -3,28 +3,29 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class CSVparser {
+public class CSVparser implements Comparator<CompanyInfo> {
 	private BufferedReader bufferReader;
 	private FileReader fileReader;
-    private List<String> companyName;	
-    private List<String> companySymbol;	
-    private List<String> companyMarketCap;    
+    private List<CompanyInfo> companyinfoList; 
 
     public CSVparser(String fileName) throws FileNotFoundException {
         try {
 		    this.fileReader       = new FileReader(fileName);
 		    this.bufferReader     = new BufferedReader(fileReader);
-            this.companyName      = new ArrayList<String> ();
-            this.companySymbol    = new ArrayList<String> ();
-            this.companyMarketCap = new ArrayList<String> ();
+            this.companyinfoList  = new ArrayList<CompanyInfo> ();
         } 
         catch (FileNotFoundException e) {
             System.out.println("Error in finding CSV file!"); 
+            System.exit(-1);
         }
 	}
 
+    public int compare(CompanyInfo c1, CompanyInfo c2) {
+        return c2.getCompanyMarketCap().compareTo(c1.getCompanyMarketCap());  
+    }
+    
     public void parseCSVFile() throws IOException { 
 	    String[] oneLineInfo = new String[8];
         String oneLine = new String();
@@ -35,33 +36,23 @@ public class CSVparser {
                 oneLineInfo = oneLine.split("\","); 
                 
                 if (this.validCompany(oneLineInfo)) { 
-                    companySymbol.add(oneLineInfo[0]); 
-                    companyName.add(oneLineInfo[1]); 
-                    companyMarketCap.add(oneLineInfo[3]); 
+                    this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
+                                                             oneLineInfo[0].substring(1, oneLineInfo[0].length()),
+                                                             Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)))); 
                 }
             }
+
+            Collections.sort(this.companyinfoList, this);
         }
         catch (IOException e) {
             System.out.println("Error in reading CSV file!"); 
+            System.exit(-1);
         }
     }
    
-    public List<String> returnCompanyName() {
-        return this.companyName; 
-    }
-   
-    public List<String> returnCompanySymbol() {
-        return this.companySymbol;
-    }
-    
-    public List<String> returnCompanyMarketCap() {
-        return this.companyMarketCap; 
-    }
-    
     public void printInfo() {
-        System.out.println("printInfo: ");
-        for (String item : this.companySymbol) {
-            System.out.println(item.substring(1, item.length())); 
+        for (CompanyInfo item : this.companyinfoList) {
+            System.out.println(item.getCompanyName()); 
         }  
     }
     
