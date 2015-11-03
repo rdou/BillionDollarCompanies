@@ -7,21 +7,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.*;
 
-public class CSVparser implements Comparator<CompanyInfo> {
-    private List<CompanyInfo> companyinfoList; 
-    
+public class CSVparser {
+    private List<String[]> companyinfoList; 
+    private List<List<CompanyInfo>> companyinfoByYear; 
+
     public CSVparser() { 
-            this.companyinfoList  = new ArrayList<CompanyInfo> ();
-    }
-	
-    public int compare(CompanyInfo c1, CompanyInfo c2) {
-        return c2.getCompanyMarketCap().compareTo(c1.getCompanyMarketCap());  
+        this.companyinfoList  = new ArrayList<String[]> ();
+        this.companyinfoByYear = new ArrayList<List<CompanyInfo>> (); 
     }
 	
     public void parseCSVFile(String filename) { 
         BufferedReader bufferReader = null;
         FileReader fileReader = null; 
-        boolean parseOriginalCSVFile = false; 
 
         try { 
             fileReader = new FileReader(filename);
@@ -32,33 +29,16 @@ public class CSVparser implements Comparator<CompanyInfo> {
             e.printStackTrace(); 
         }
 
-	    String[] oneLineInfo = new String[9];
+	    String[] oneLineInfo = new String[11]; 
         String oneLine = new String();
 
         try { 
             bufferReader.readLine();
             while ((oneLine = bufferReader.readLine()) != null) {
-                oneLineInfo = oneLine.split("\","); 
-                
-                if (parseOriginalCSVFile) { 
-                    if (this.validCompany(oneLineInfo)) { 
-                        this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
-                                                                 oneLineInfo[0].substring(1, oneLineInfo[0].length()),
-                                                                 Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)),
-                                                                 ""));
-                    }
-                }
-                else {
-                    if (oneLineInfo.length == 9) { 
-                        this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
-                                                                 oneLineInfo[0].substring(1, oneLineInfo[0].length()),
-                                                                 Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)),
-                                                                 oneLineInfo[8].substring(1, oneLineInfo[8].length())));
-                    } 
-                } 
+                oneLineInfo = oneLine.split("\",");
+                //System.out.println(oneLine); 
+                this.companyinfoList.add(oneLineInfo); 
             }
-
-            Collections.sort(this.companyinfoList, this);
         }
         catch (IOException e) {
             System.out.println("Error in reading CSV file!"); 
@@ -77,39 +57,49 @@ public class CSVparser implements Comparator<CompanyInfo> {
             }
         }
     }
-   
-    public void printInfo() {
-        int i = 0; 
-        for (CompanyInfo item : this.companyinfoList) {
-            if (i < 30) { 
-                System.out.println(item.getCompanySymbol() + " " + item.getCompanyMarketCap() + "B " + item.getCompanyLocation()); 
-                i++;
+    
+    public void cleanUpData() {
+        for (int i = 2; i < 10; i++) { 
+            List<CompanyInfo> tempCompanyInfo = new ArrayList<CompanyInfo> ();
+
+            for (String[] string : this.companyinfoList) {
+                //for (String item : string)  
+                //    System.out.println(item); 
+                tempCompanyInfo.add(new CompanyInfo(string[1].substring(1, string[1].length()),
+                                                    string[0].substring(1, string[0].length()),
+                                                    parseMarketCap(string[i].substring(1, string[i].length())),
+                                                    string[10].substring(1, string[10].length() - 1))); 
             } 
-            else 
-                break;
-        }  
-    }
-
-    public List<CompanyInfo> returnCompanyInfo() {
-        return this.companyinfoList;
-    } 
-
-    private boolean validCompany(String[] oneLineInfo) {
-        int lastChar = oneLineInfo[3].length() - 1; 
- 
-        return (oneLineInfo[5].equals("\"Technology") && 
-               (!oneLineInfo[3].equals("\"n/a")) && 
-               (oneLineInfo[3].charAt(lastChar) == 'B') &&
-               Float.parseFloat(oneLineInfo[3].substring(2, lastChar)) >= 1f);
+            companyinfoByYear.add(tempCompanyInfo); 
+        }
     }
     
+    public Float parseMarketCap(String marketcap) {
+        return Float.parseFloat(marketcap.split(",")[0]); 
+    }
 
     /*
-    public static void main(String[] args) {
-            CSVparser test = new CSVparser();
-            test.parseCSVFile("NASDAQ.csv");
-            test.parseCSVFile("NYSE.csv");
-            test.printInfo();
-    }
+    AAPL 643.0B 37.387538,-122.039057
+    GOOGL 359.0B 37.420284,-122.075047
+    FB 216.0B 37.484849,-122.148365
+    INTC 175.0B 37.376132,-121.975223
+    CSCO 142.0B 37.388050,-121.973880
+    ORCL 197.0B 37.395785,-121.952682
+    EBAY 69.0B 37.295986,-121.927607
+    LNKD 28.0B 37.423304,-122.070659
+    CRM 37.0B 37.794092,-122.394815
+    ADBE 36.0B 37.331,-121.894
+    YHOO 47.0B 37.417281,-122.025137
     */
+    public void printInfo() {
+        for (List<CompanyInfo> info : this.companyinfoByYear) {
+            for (CompanyInfo company : info) {
+                System.out.println(company.getCompanySymbol() + " " + company.getCompanyMarketCap() + "B " + company.getCompanyLocation()); 
+            } 
+        } 
+    } 
+    
+   public List<List<CompanyInfo>> returnCompanyInfo() {
+        return this.companyinfoByYear;
+    } 
 }

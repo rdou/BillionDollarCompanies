@@ -29,7 +29,7 @@ import processing.core.PApplet;
 public class CompanyMap extends PApplet{
     private UnfoldingMap map;
     private List<Marker> companyMarker = new ArrayList<Marker> (); 
-    private List<CompanyInfo> companyinfoList = new ArrayList<CompanyInfo> ();
+    private List<List<CompanyInfo>> companyinfoByYear = new ArrayList<List<CompanyInfo>> ();
 
     private void mapSetting() {
         map = new UnfoldingMap(this, 200, 25, 675, 550, new Google.GoogleMapProvider());
@@ -43,11 +43,11 @@ public class CompanyMap extends PApplet{
         MapUtils.createDefaultEventDispatcher(this, map);
 
 		CSVparser csvparser = new CSVparser();
-		csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/NASDAQ.csv");
-		csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/NYSE.csv");	        
-		this.companyinfoList = csvparser.returnCompanyInfo();
+		csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/top10.csv");   
+		csvparser.cleanUpData();
+		this.companyinfoByYear = csvparser.returnCompanyInfo();
 		
-		for (CompanyInfo item : this.companyinfoList) {
+		for (CompanyInfo item : this.companyinfoByYear.get(4)) {
 			companyMarker.add(new StaticMarker(new Location(this.getLatitude(item), this.getLongitude(item)), item));
 		}
 
