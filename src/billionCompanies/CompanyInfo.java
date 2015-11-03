@@ -1,12 +1,16 @@
+package billionCompanies;
+
 public class CompanyInfo {
     private String companyName;
     private String companySymbol;
     private Float companyMarketCap;
-    
-    public CompanyInfo(String name, String symbol, Float marketcap) {
+    private String companyLocation;
+
+    public CompanyInfo(String name, String symbol, Float marketcap, String location) {
         this.companyName = name;
         this.companySymbol = symbol; 
         this.companyMarketCap = marketcap; 
+        this.companyLocation = location; 
     } 
     
     // companyName
@@ -35,11 +39,21 @@ public class CompanyInfo {
     public void setCompanyMarketCap(Float marketcap) {
         this.companyMarketCap = marketcap; 
     }
+    
+    // companyLocation
+    public String getCompanyLocation() {
+        return this.companyLocation; 
+    } 
+    
+    public void setCompanyLocation(String location) {
+        this.companyLocation = location; 
+    } 
 
     // output company information
     public void outputCompanyInfo() {
         System.out.println("Name       : " + this.companyName); 
         System.out.println("Symbol     : " + this.companySymbol); 
         System.out.println("Market Cap : " + this.companyMarketCap); 
+        System.out.println("Location   : " + this.companyLocation);
     }
 }

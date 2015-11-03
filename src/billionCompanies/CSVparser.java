@@ -1,3 +1,5 @@
+package billionCompanies;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -6,56 +8,92 @@ import java.util.ArrayList;
 import java.util.*;
 
 public class CSVparser implements Comparator<CompanyInfo> {
-	private BufferedReader bufferReader;
-	private FileReader fileReader;
     private List<CompanyInfo> companyinfoList; 
-
-    public CSVparser(String fileName) throws FileNotFoundException {
-        try {
-		    this.fileReader       = new FileReader(fileName);
-		    this.bufferReader     = new BufferedReader(fileReader);
+    
+    public CSVparser() { 
             this.companyinfoList  = new ArrayList<CompanyInfo> ();
-        } 
-        catch (FileNotFoundException e) {
-            System.out.println("Error in finding CSV file!"); 
-            System.exit(-1);
-        }
-	}
-
+    }
+	
     public int compare(CompanyInfo c1, CompanyInfo c2) {
         return c2.getCompanyMarketCap().compareTo(c1.getCompanyMarketCap());  
     }
-    
-    public void parseCSVFile() throws IOException { 
-	    String[] oneLineInfo = new String[8];
+	
+    public void parseCSVFile(String filename) { 
+        BufferedReader bufferReader = null;
+        FileReader fileReader = null; 
+        boolean parseOriginalCSVFile = false; 
+
+        try { 
+            fileReader = new FileReader(filename);
+	        bufferReader = new BufferedReader(fileReader);
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Error in opening CSV file!"); 
+            e.printStackTrace(); 
+        }
+
+	    String[] oneLineInfo = new String[9];
         String oneLine = new String();
 
         try { 
-            this.bufferReader.readLine();
-            while ((oneLine = this.bufferReader.readLine()) != null) {
+            bufferReader.readLine();
+            while ((oneLine = bufferReader.readLine()) != null) {
                 oneLineInfo = oneLine.split("\","); 
                 
-                if (this.validCompany(oneLineInfo)) { 
-                    this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
-                                                             oneLineInfo[0].substring(1, oneLineInfo[0].length()),
-                                                             Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)))); 
+                if (parseOriginalCSVFile) { 
+                    if (this.validCompany(oneLineInfo)) { 
+                        this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
+                                                                 oneLineInfo[0].substring(1, oneLineInfo[0].length()),
+                                                                 Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)),
+                                                                 ""));
+                    }
                 }
+                else {
+                    if (oneLineInfo.length == 9) { 
+                        this.companyinfoList.add(new CompanyInfo(oneLineInfo[1].substring(1, oneLineInfo[1].length()),
+                                                                 oneLineInfo[0].substring(1, oneLineInfo[0].length()),
+                                                                 Float.parseFloat(oneLineInfo[3].substring(2, oneLineInfo[3].length() - 1)),
+                                                                 oneLineInfo[8].substring(1, oneLineInfo[8].length())));
+                    } 
+                } 
             }
 
             Collections.sort(this.companyinfoList, this);
         }
         catch (IOException e) {
             System.out.println("Error in reading CSV file!"); 
-            System.exit(-1);
+            e.printStackTrace(); 
+        }
+        finally {
+            try { 
+                bufferReader.close(); 
+                fileReader.close(); 
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace(); 
+            }
+            catch (IOException e) {
+                e.printStackTrace(); 
+            }
         }
     }
    
     public void printInfo() {
+        int i = 0; 
         for (CompanyInfo item : this.companyinfoList) {
-            System.out.println(item.getCompanyName()); 
+            if (i < 30) { 
+                System.out.println(item.getCompanySymbol() + " " + item.getCompanyMarketCap() + "B " + item.getCompanyLocation()); 
+                i++;
+            } 
+            else 
+                break;
         }  
     }
-    
+
+    public List<CompanyInfo> returnCompanyInfo() {
+        return this.companyinfoList;
+    } 
+
     private boolean validCompany(String[] oneLineInfo) {
         int lastChar = oneLineInfo[3].length() - 1; 
  
@@ -65,17 +103,13 @@ public class CSVparser implements Comparator<CompanyInfo> {
                Float.parseFloat(oneLineInfo[3].substring(2, lastChar)) >= 1f);
     }
     
+
+    /*
     public static void main(String[] args) {
-        try { 
-            CSVparser test = new CSVparser("companylist.csv");
-            test.parseCSVFile();
+            CSVparser test = new CSVparser();
+            test.parseCSVFile("NASDAQ.csv");
+            test.parseCSVFile("NYSE.csv");
             test.printInfo();
-        } 
-        catch (FileNotFoundException e1) {
-            System.exit(-1); 
-        }
-        catch (IOException e2) {
-            System.exit(-1); 
-        }
     }
+    */
 }
