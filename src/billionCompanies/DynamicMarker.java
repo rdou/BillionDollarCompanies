@@ -23,4 +23,10 @@ public class DynamicMarker extends CompanyMarker {
 
 	}
 
+	@Override
+	public void showCompanyInfo(PGraphics pg, float x, float y) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

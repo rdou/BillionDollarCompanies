@@ -20,9 +20,13 @@ public abstract class CompanyMarker extends SimplePointMarker {
 
     @Override 
     public void draw(PGraphics pg, float x, float y) {
-        drawMarker(pg, x, y); 
+        drawMarker(pg, x, y);
+        if (this.selected) {
+        	showCompanyInfo(pg, x, y);
+		}
     } 
     
     public abstract void drawMarker(PGraphics pg, float x, float y);
+    public abstract void showCompanyInfo(PGraphics pg, float x, float y);
 }
 
