@@ -1,5 +1,11 @@
 package billionCompanies;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 import de.fhpotsdam.unfolding.geo.Location;
@@ -16,12 +22,8 @@ public class StaticMarker extends CompanyMarker {
         this.companySymbol    = companyinfo.getCompanySymbol();
         this.companyMarketCap = companyinfo.getCompanyMarketCap();	
     }
-
-	public StaticMarker(Location location, HashMap<String, Object> properties) {
-		super(location, properties);
-	}
     
-	@Override
+    @Override
 	public void drawMarker(PGraphics pg, float x, float y) {
 		float radius = this.getRadius();
 		
@@ -59,8 +61,27 @@ public class StaticMarker extends CompanyMarker {
 			pg.text(marketCap, x + 10 , y - 37);
 		}
 	}
-	
-    private float getRadius() {
+    
+    public void getCompanyMarketCap() {
+		URL url = null;
+
+		try {
+			url = new URL("http://download.finance.yahoo.com/d/quotes.csv?s=" + this.companySymbol + "&f=j1");
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
+            String marketCap = reader.readLine();
+		    this.companyMarketCap = Float.parseFloat(marketCap.substring(0, marketCap.length() - 1)); 
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }        
+    
+    protected float getRadius() {
         return (float) (Math.log(this.companyMarketCap) * 8);
     }
 }

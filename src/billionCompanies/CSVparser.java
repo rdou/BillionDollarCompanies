@@ -63,8 +63,6 @@ public class CSVparser {
             List<CompanyInfo> tempCompanyInfo = new ArrayList<CompanyInfo> ();
 
             for (String[] string : this.companyinfoList) {
-                //for (String item : string)  
-                //    System.out.println(item); 
                 tempCompanyInfo.add(new CompanyInfo(string[1].substring(1, string[1].length()),
                                                     string[0].substring(1, string[0].length()),
                                                     parseMarketCap(string[i].substring(1, string[i].length())),
@@ -74,7 +72,7 @@ public class CSVparser {
         }
     }
     
-    public Float parseMarketCap(String marketcap) {
+    private float parseMarketCap(String marketcap) {
         return Float.parseFloat(marketcap.split(",")[0]); 
     }
 
@@ -99,7 +97,14 @@ public class CSVparser {
         } 
     } 
     
-   public List<List<CompanyInfo>> returnCompanyInfo() {
+    public List<CompanyInfo> returnOneYearCompanyInfo() {
+    	if (this.companyinfoByYear != null)
+    		return this.companyinfoByYear.get(0);
+    	else 
+    		return null;
+    }
+    
+    public List<List<CompanyInfo>> returnCompanyInfo() {
         return this.companyinfoByYear;
     } 
 }

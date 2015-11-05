@@ -3,17 +3,24 @@ package billionCompanies;
 public class CompanyInfo {
     private String companyName;
     private String companySymbol;
-    private Float companyMarketCap;
+    private float companyMarketCap;
     private String companyLocation;
 
-    public CompanyInfo(String name, String symbol, Float marketcap, String location) {
+    public CompanyInfo(String name, String symbol, float marketcap, String location) {
         this.companyName = name;
         this.companySymbol = symbol; 
         this.companyMarketCap = marketcap; 
         this.companyLocation = location; 
     } 
     
-    // companyName
+    public CompanyInfo(CompanyInfo info) {
+        this.companyName = info.getCompanyName();
+        this.companySymbol = info.getCompanySymbol(); 
+        this.companyMarketCap = info.getCompanyMarketCap(); 
+        this.companyLocation = info.getCompanyLocation(); 	
+	}
+
+	// companyName
     public String getCompanyName() {
         return this.companyName; 
     }
@@ -32,11 +39,11 @@ public class CompanyInfo {
     }
     
     // companyMarketCap 
-    public Float getCompanyMarketCap() {
+    public float getCompanyMarketCap() {
         return this.companyMarketCap; 
     }
     
-    public void setCompanyMarketCap(Float marketcap) {
+    public void setCompanyMarketCap(float marketcap) {
         this.companyMarketCap = marketcap; 
     }
     

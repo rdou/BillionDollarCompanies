@@ -13,17 +13,15 @@ public abstract class CompanyMarker extends SimplePointMarker {
     public CompanyMarker(Location location) {
         super(location); 
     }
-
-    public CompanyMarker(Location location, java.util.HashMap<java.lang.String,java.lang.Object> properties) {
-	    super(location, properties);
-	}
-
+    
     @Override 
     public void draw(PGraphics pg, float x, float y) {
-        drawMarker(pg, x, y);
-        if (this.selected) {
-        	showCompanyInfo(pg, x, y);
-		}
+        if (!this.hidden) {
+	    	drawMarker(pg, x, y);
+	        if (this.selected) {
+	        	showCompanyInfo(pg, x, y);
+			}
+        }
     } 
     
     public abstract void drawMarker(PGraphics pg, float x, float y);
