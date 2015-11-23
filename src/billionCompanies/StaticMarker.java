@@ -11,18 +11,34 @@ import java.util.HashMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import processing.core.*;
 
+/** StaticMarker
+ * Implements a static company marker on CompanyMap.
+ * @author Chenchen Zhou
+ * @version 1.0
+ */
 public class StaticMarker extends CompanyMarker {
     private String companyName; 
     private String companySymbol; 
     private Float companyMarketCap; 
 
-	public StaticMarker(Location location, CompanyInfo companyinfo) {
+    /** StaticMarker
+     * StaticMarker constructor.
+     * @param location location of static markeri.
+     * @param companyinfo static marker information.
+     */	
+    public StaticMarker(Location location, CompanyInfo companyinfo) {
 		super(location);
         this.companyName      = companyinfo.getCompanyName();
         this.companySymbol    = companyinfo.getCompanySymbol();
         this.companyMarketCap = companyinfo.getCompanyMarketCap();	
     }
     
+    /** drawMarker
+     * Draw circle on map. circle's radius is based on company's marketcap.  
+     * @param pg PGraphics object.
+     * @param x x position in outer object coordinates. 
+     * @param y y position in outer object coordinates.  
+     */ 
     @Override
 	public void drawMarker(PGraphics pg, float x, float y) {
 		float radius = this.getRadius();
@@ -45,7 +61,13 @@ public class StaticMarker extends CompanyMarker {
 		
 		pg.ellipse(x, y, radius, radius);
 	}
-	
+    
+    /** showCompanyInfo 
+     * Show selected markers' name and marketcap. 
+     * @param pg PGraphics object.
+     * @param x x position in outer object coordinates. 
+     * @param y y position in outer object coordinates.  
+     */ 
 	@Override
 	public void showCompanyInfo(PGraphics pg, float x, float y) {
 		{
@@ -62,13 +84,16 @@ public class StaticMarker extends CompanyMarker {
 		}
 	}
     
+    /** getCompanyMarketCap 
+     * Get realtime marketcap from YahooFinance. 
+     */ 
     public void getCompanyMarketCap() {
 		URL url = null;
 
 		try {
 			url = new URL("http://download.finance.yahoo.com/d/quotes.csv?s=" + this.companySymbol + "&f=j1");
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
@@ -80,7 +105,11 @@ public class StaticMarker extends CompanyMarker {
 			e.printStackTrace();
 		}
     }        
-    
+   
+    /** getRadius
+     * Generate markers' radius based on marketcap.
+     * @return markers' radius. 
+     */ 
     protected float getRadius() {
         return (float) (Math.log(this.companyMarketCap) * 8);
     }

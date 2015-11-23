@@ -17,7 +17,11 @@ import de.fhpotsdam.unfolding.utils.MapUtils;
 
 import processing.core.PApplet;
 
-
+/** 
+ * Implements a map class to show companies in silicon valley.
+ * @authod Chenchen Zhou
+ * @version 1.0
+ */
 public class CompanyMap extends PApplet{
     private List<UnfoldingMap> maps = new ArrayList<UnfoldingMap> (); 
     private List<List<CompanyInfo>> companyinfoByYear = new ArrayList<List<CompanyInfo>> ();
@@ -31,64 +35,36 @@ public class CompanyMap extends PApplet{
     
     private final int NUM_OF_YEARS = 9;
     
+    /** 
+     * Setup canva and maps. 
+     */ 
     @Override
     public void setup() {
-        int index = 0;
-        List<CompanyInfo> temp = new ArrayList<CompanyInfo> (); 
-
+        
+        // set canva size  
         size(900, 600, OPENGL); 
+
+        // map init 
         this.mapSetting();
-		CSVparser csvparser = new CSVparser();
-		csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/top10.csv");   
-		csvparser.cleanUpData();
-		this.companyinfoByYear = csvparser.returnCompanyInfo();
-        
-        if (this.companyinfoByYear != null) {
-        	for (CompanyInfo info : this.companyinfoByYear.get(0)) {
-        		//CompanyInfo copy = new CompanyInfo(info);
-            //temp.addAll(this.companyinfoByYear.get(0));  
-        		//temp = new ArrayList<CompanyInfo> (this.companyinfoByYear.get(0));
-        		temp.add(new CompanyInfo(info));
-        	}
-        }
-        System.out.println(this.companyinfoByYear.get(0).get(0).getCompanyName());
-        System.out.println(this.companyinfoByYear.get(0).get(0).getCompanyMarketCap());
-        for (CompanyInfo item : temp) {
-            //System.out.println("Name       : " + item.getCompanyName()); 
-            //System.out.println("Symbol     : " + item.getCompanySymbol()); 
-            //System.out.println("Market Cap : " + item.getCompanyMarketCap()); 
-            //System.out.println("Location   : " + item.getCompanyLocation());
-            item.setCompanyMarketCap(getCompanyMarketCapBySymbol(item.getCompanySymbol()));
-            //System.out.println("Name       : " + item.getCompanyName()); 
-            //System.out.println("Symbol     : " + item.getCompanySymbol()); 
-            //System.out.println("Market Cap : " + item.getCompanyMarketCap()); 
-            //System.out.println("Location   : " + item.getCompanyLocation());
-        } 
-        
-
-
-        System.out.println(this.companyinfoByYear.get(0).get(0).getCompanyName());
-        System.out.println(this.companyinfoByYear.get(0).get(0).getCompanyMarketCap());
-        this.companyinfoByYear.add(0, temp);
-        System.out.println(this.companyinfoByYear.get(1).get(0).getCompanyName());
-        System.out.println(this.companyinfoByYear.get(1).get(0).getCompanyMarketCap());
-        for (UnfoldingMap map : this.maps) {
-            this.addMapMarkers(index++);
-            map.addMarkers(this.companyMarker);  
-        }
-
-        this.currentMap = this.maps.get(0);
-        this.currentYear = "Year 2015";
-        this.currentMarker = this.currentMap.getMarkers();
-		background(0);
+        this.mapGetCompanyInfo(); 
+        background(0);
 	}
     
+    /** 
+     * Draw maps and markers.
+     */
     @Override
     public void draw() {	
+        // draw map keys
         this.addKey(this.currentYear);	
+        
+        // draw current map and markers
         this.currentMap.draw();
 	}	
     
+    /**
+     * Press keyboard to update currentMap, currentYear and currentMarker. 
+     */ 
     @Override
     public void keyPressed() {    	
         if (key == '1') {
@@ -127,21 +103,52 @@ public class CompanyMap extends PApplet{
         	this.currentMap = this.maps.get(8);
             this.currentYear = "Year 2006";
         }
+
         this.currentMarker = this.currentMap.getMarkers();
     }
+   
+    /**
+     * Mouse move event:
+     * Show mouse selected company name and companycap. 
+     */ 
+    @Override 
+    public void mouseMoved() {
+	    // one marker selected before	
+        if (this.lastSelected != null) {
+    		this.lastSelected.setSelected(false);
+   			this.lastSelected = null;
+   		}
+        
+        // show selected marker's comapny name and companycap.     
+        selectMarkerIfHover(this.currentMarker);
+    }
     
+    /**
+     * Mouse click event: 
+     * 1. Show all markers if any marker has been clicked before. 
+     * 2. Hide one marker if no marker has been clicked before.  
+     */ 
 	@Override
 	public void mouseClicked() {
-		if (this.lastClicked != null) {
+	    // one marker clicked before	
+        if (this.lastClicked != null) {
 			this.unhideMarkers();
-			this.lastClicked.getCompanyMarketCap();
 			this.lastClicked = null;
 		}
+        // no marker clicked before
 		else {
 			this.hideOtherMarkers();
 		}
-    }
-	
+    } 
+
+    // ################################################### 
+    // utils methods  
+    // ################################################### 
+    
+    /**
+     * Draw map key.
+     * @param currentYear a string shows current year.  
+     */    
     private void addKey(String currentYear) {	
 		int x = 25;
 		int y = 25;
@@ -174,17 +181,9 @@ public class CompanyMap extends PApplet{
         ellipse(x + 100, y + 205, 11, 11); 		
 	}
 
-    @Override 
-    public void mouseMoved() {
-    	if (this.lastSelected != null) {
-    		this.lastSelected.setSelected(false);
-   			this.lastSelected = null;
-   		}
-    	
-    	selectMarkerIfHover(this.currentMarker);
-    }
-    
-    // utils methods
+    /** 
+     * Initialize NUM_OF_YEARS maps 
+     */ 
     private void mapSetting() {
     	Location center = new Location(37.530368, -122.218159);
         for (int i = 0; i < this.NUM_OF_YEARS; i++) {
@@ -199,22 +198,73 @@ public class CompanyMap extends PApplet{
         } 
     }
     
+    /** 
+     * 1. Parse company information from CSV file 
+     * to get (NUM_OF_YEARS - 1) years' company marketcap ( - 2014).
+     * 2. Add all current day's companycaps to companyinfoByYear (2015).
+     * 3. Add all company markers to all maps.
+     * 4. Set current map, marker and year.  
+     */ 
+    private void mapGetCompanyInfo() { 
+        int yearIndex = 0;
+        List<CompanyInfo> temp = new ArrayList<CompanyInfo> (); 
+		
+        CSVparser csvparser = new CSVparser();
+		csvparser.cleanUpData();
+		this.companyinfoByYear = csvparser.returnCompanyInfo();
+        
+        if (this.companyinfoByYear != null) {
+            for (CompanyInfo info : this.companyinfoByYear.get(0)) {
+        	    temp.add(new CompanyInfo(info));
+        	}
+        }
+        
+        // get companies' current companycap 
+        for (CompanyInfo item : temp) {
+            item.setCompanyMarketCap(getCompanyMarketCapBySymbol(item.getCompanySymbol()));
+        } 
+        
+        // update companyinfoByYear and add updated company markers to corresponding maps 
+        this.companyinfoByYear.add(0, temp);
+        for (UnfoldingMap map : this.maps) {
+            this.addMapMarkers(yearIndex++);
+            map.addMarkers(this.companyMarker);  
+        }
+        
+        // set default current map, year and marker 
+        this.currentMap = this.maps.get(0);
+        this.currentYear = "Year 2015";
+        this.currentMarker = this.currentMap.getMarkers();
+    }
+    
+    /**
+     * Add company markers to maps.
+     */
     private void addMapMarkers(int index) {
-    	System.out.println(index);
 		companyMarker = new ArrayList<Marker> ();
 		for (CompanyInfo item : this.companyinfoByYear.get(index)) {
 			this.companyMarker.add(new StaticMarker(new Location(this.getLatitude(item), this.getLongitude(item)), item));
 		}
-	} 
-     
+	}
+    
+    /**
+     * Get company's latitude.
+     */ 
     private double getLatitude(CompanyInfo companyInfo) {
     	return Double.parseDouble(companyInfo.getCompanyLocation().split(",")[0]);
     }
     
+    /**
+     * Get company's longitude.
+     */ 
     private double getLongitude(CompanyInfo companyInfo) {
     	return Double.parseDouble(companyInfo.getCompanyLocation().split(",")[1]);
     }   
     
+    /**
+     * Set marker to be selected if marker is not selected and 
+     * mouse is in marker's location.
+     */ 
     private void selectMarkerIfHover(List<Marker> markers) {
 		if (lastSelected != null) {
 			return;
@@ -225,15 +275,19 @@ public class CompanyMap extends PApplet{
 			StaticMarker marker = (StaticMarker)m;
 			if (marker.isInside(this.currentMap,  mouseX, mouseY)) {
 				lastSelected = marker;
-				marker.setSelected(true);
+				lastSelected.setSelected(true);
 				return;
 			}
 		}
 	}
     
+    /**
+     * Show all markers.
+     */ 
     private void unhideMarkers() {
         List<Marker> temp = new ArrayList<Marker> ();
 
+        // valid in all maps 
         for (UnfoldingMap map : this.maps) {
             temp = map.getMarkers(); 
     	    
@@ -242,10 +296,14 @@ public class CompanyMap extends PApplet{
             }
     	}
     }
-
+    
+    /**
+     * Hide all other markers except clicked one.
+     */
     private void hideOtherMarkers() {
         List<Marker> markerList= new ArrayList<Marker> ();
         
+        // valid in all maps 
         for (UnfoldingMap map : this.maps) {
             markerList = map.getMarkers(); 
     	    
@@ -263,7 +321,12 @@ public class CompanyMap extends PApplet{
             }
         }
     }
-
+    
+    /**
+     * Get companycap from Yahoo Finance.
+     * @param companySymbol Company's stock symbol.
+     * @return companyMarketCap Company's current markert cap. 
+     */
     public float getCompanyMarketCapBySymbol(String companySymbol) {
 		float companyMarketCap = 0;
     	URL url = null;
