@@ -210,6 +210,7 @@ public class CompanyMap extends PApplet{
         List<CompanyInfo> temp = new ArrayList<CompanyInfo> (); 
 		
         CSVparser csvparser = new CSVparser();
+        csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/top10.csv"); 
 		csvparser.cleanUpData();
 		this.companyinfoByYear = csvparser.returnCompanyInfo();
         
@@ -327,7 +328,7 @@ public class CompanyMap extends PApplet{
      * @param companySymbol Company's stock symbol.
      * @return companyMarketCap Company's current markert cap. 
      */
-    public float getCompanyMarketCapBySymbol(String companySymbol) {
+    private float getCompanyMarketCapBySymbol(String companySymbol) {
 		float companyMarketCap = 0;
     	URL url = null;
 
