@@ -22,7 +22,7 @@ import processing.core.PApplet;
  * @authod Chenchen Zhou
  * @version 1.0
  */
-public class CompanyMap extends PApplet{
+public class CompanyMap extends PApplet {
     private List<UnfoldingMap> maps = new ArrayList<UnfoldingMap> (); 
     private List<List<CompanyInfo>> companyinfoByYear = new ArrayList<List<CompanyInfo>> ();
     private List<Marker> companyMarker;

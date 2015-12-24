@@ -83,28 +83,6 @@ public class StaticMarker extends CompanyMarker {
 			pg.text(marketCap, x + 10 , y - 37);
 		}
 	}
-    
-    /** getCompanyMarketCap 
-     * Get realtime marketcap from YahooFinance. 
-     */ 
-    public void getCompanyMarketCap() {
-		URL url = null;
-
-		try {
-			url = new URL("http://download.finance.yahoo.com/d/quotes.csv?s=" + this.companySymbol + "&f=j1");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
-            String marketCap = reader.readLine();
-		    this.companyMarketCap = Float.parseFloat(marketCap.substring(0, marketCap.length() - 1)); 
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }        
    
     /** getRadius
      * Generate markers' radius based on marketcap.
