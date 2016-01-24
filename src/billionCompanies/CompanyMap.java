@@ -210,7 +210,7 @@ public class CompanyMap extends PApplet {
         List<CompanyInfo> temp = new ArrayList<CompanyInfo> (); 
 		
         CSVparser csvparser = new CSVparser();
-        csvparser.parseCSVFile("/home/rdou/rdou_work/ITU/CS518/Project/src/billionCompanies/top10.csv"); 
+        csvparser.parseCSVFile("C:/Users/Administrator/workspace/unfolding-app-template-with-examples/src/billionCompanies/top10.csv"); 
 		csvparser.cleanUpData();
 		this.companyinfoByYear = csvparser.returnCompanyInfo();
         
